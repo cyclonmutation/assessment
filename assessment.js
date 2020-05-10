@@ -1,63 +1,56 @@
-'use strict'
+'use strict';
 const userNameInput = document.getElementById('user-name');
 const assessmentButton = document.getElementById('assessment');
 const resultDivided = document.getElementById('result-area');
-const tweetDivide = document.getElementById('tweet-area');
+const tweetDivided = document.getElementById('tweet-area');
 
-/** 
- * 指定した要素の子供を全て削除する
+/**
+ * 指定した要素の子どもを全て除去する
  * @param {HTMLElement} element HTMLの要素
  */
-function removeAllChildren(element){
-    while(element.firstChild) { // 子要素がある限り削除
-        element.removeChild(element.firstChild);
-    }
+function removeAllChildren(element) {
+  while (element.firstChild) { // 子どもの要素があるかぎり除去
+    element.removeChild(element.firstChild);
+  }
 }
 
-// テキストフィールドでEnterキー押下の場合も診断する
-userNameInput.onkeydown = (event) => {
-    if(event.key === 'Enter') {
-        assessmentButton.onclick();
-    }
-}
-
-// 無名関数 assessmentButton.onclick = function() { の代わりに、アロー関数 => を使う
 assessmentButton.onclick = () => {
-    const userName = userNameInput.value;
-    if (userName.length === 0) {    // 名前が空の時は処理を終了するガード句
-        return;
-    }
+  const userName = userNameInput.value;
+  if (userName.length === 0) { // 名前が空の時は処理を終了する
+    return;
+  }
 
-    //診断結果表示エリア
-    removeAllChildren(resultDivided);
-    const header = document.createElement('h3');
-    header.innerText = '診断結果';
-    resultDivided.appendChild(header);
+  // 診断結果表示エリアの作成
+  removeAllChildren(resultDivided);
+  const header = document.createElement('h3');
+  header.innerText = '診断結果';
+  resultDivided.appendChild(header);
 
-    const paragraph = document.createElement('p');
-    const result = assessment(userName);
-    paragraph.innerText = result;
-    resultDivided.appendChild(paragraph);
+  const paragraph = document.createElement('p');
+  const result = assessment(userName);
+  paragraph.innerText = result;
+  resultDivided.appendChild(paragraph);
 
-    //ツイートエリア
-    removeAllChildren(tweetDivide);
-    const anchor = document.createElement('a');
-    const hrefValue = 'https://twitter.com/intent/tweet?button_hashtag=' + encodeURIComponent('あなたのいいところ') + '&ref_src=twsrc%5Etfw';
-    anchor.setAttribute('href', hrefValue);
-    anchor.className = 'twitter-hashtag-button';
-    anchor.setAttribute('data-text', result);
-    anchor.innerText = 'Tweet #あなたのいいところ';
-    tweetDivide.appendChild(anchor);
+  // ツイートエリアの作成
+  removeAllChildren(tweetDivided);
+  const anchor = document.createElement('a');
+  const hrefValue = 'https://twitter.com/intent/tweet?button_hashtag='
+    + encodeURIComponent('あなたのいいところ')
+    + '&ref_src=twsrc%5Etfw';
+  anchor.setAttribute('href', hrefValue);
+  anchor.className = 'twitter-hashtag-button';
+  anchor.setAttribute('data-text', result);
+  anchor.innerText = 'Tweet #あなたのいいところ';
+  tweetDivided.appendChild(anchor);
 
-    const script = document.createElement('script');
-    script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
-    tweetDivide.appendChild(script);
-}
+  // widgets.js の設定
+  const script = document.createElement('script');
+  script.setAttribute('src', 'https://platform.twitter.com/widgets.js');
+  tweetDivided.appendChild(script);
+};
 
-// const: 1度しか代入できない変数。{}スコープ範囲内でのみ有効（varは複数回代入できる）
-// let: {}スコープ範囲内でのみ有効
 const answers = [
-  '{userName}のいいところは声です。{userName}の特徴的な声は皆を惹きつけ、心に残ります。',
+  '{userName}のいいところは声です。{userName}の特徴的な声はみなを惹きつけ、心に残ります。',
   '{userName}のいいところはまなざしです。{userName}に見つめられた人は、気になって仕方がないでしょう。',
   '{userName}のいいところは情熱です。{userName}の情熱に周りの人は感化されます。',
   '{userName}のいいところは厳しさです。{userName}の厳しさがものごとをいつも成功に導きます。',
@@ -72,43 +65,35 @@ const answers = [
   '{userName}のいいところは好奇心です。新しいことに向かっていく{userName}の心構えが多くの人に魅力的に映ります。',
   '{userName}のいいところは気配りです。{userName}の配慮が多くの人を救っています。',
   '{userName}のいいところはその全てです。ありのままの{userName}自身がいいところなのです。',
-  '{userName}のいいところは自制心です。やばいと思ったときにしっかりと衝動を抑えられる{userName}が皆から評価されています。',
-  '{userName}のいいところは優しさです。{userName}の優しい雰囲気や立ち振る舞いに多くの人が癒やされています。'
+  '{userName}のいいところは自制心です。やばいと思ったときにしっかりと衝動を抑えられる{userName}が皆から評価されています。'
 ];
 
 /**
- * 名前の文字列を渡すと、診断結果を返す関数
- * @param {string} userName ユーザの名前
+ * 名前の文字列を渡すと診断結果を返す関数
+ * @param {string} userName ユーザーの名前
  * @return {string} 診断結果
  */
 function assessment(userName) {
-    // 全文字のコード番号を取得してそれを足し合わせる
-    let sumOfCharCode = 0;
-    for (let i = 0; i < userName.length; i++) {
-        sumOfCharCode = sumOfCharCode + userName.charCodeAt(i);
-    }
+  // 全文字のコード番号を取得してそれを足し合わせる
+  let sumOfCharCode = 0;
+  for (let i = 0; i < userName.length; i++) {
+    sumOfCharCode = sumOfCharCode + userName.charCodeAt(i);
+  }
 
-    // 文字のコード番号の合計を回答の数で割って添字の数値を求める
-    const index = sumOfCharCode % answers.length;
-    let result = answers[index];
-    result = result.replace(/\{userName\}/g, userName);
-    return result;
+  // 文字のコード番号の合計を回答の数で割って添字の数値を求める
+  const index = sumOfCharCode % answers.length;
+  let result = answers[index];
+
+  result = result.replace(/{userName}/g, userName);
+  return result;
 }
 
-/** 
-console.log(assessment('太郎'));
-console.log(assessment('次郎'));
-console.log(assessment('太郎'));
- */
-
+// テストコード
 console.assert(
-    assessment('太郎') === '太郎のいいところは決断力です。太郎がする決断にいつも助けられる人がいます。',
-    '診断結果の文言の特定の部分を名前に置き換える処理が正しくありません。'
+  assessment('太郎') === '太郎のいいところは決断力です。太郎がする決断にいつも助けられる人がいます。',
+  '診断結果の文言の特定の部分を名前に置き換える処理が正しくありません。'
 );
-
 console.assert(
-    assessment('太郎') === assessment('太郎'),
-    '入力が同じ名前なら、同じ診断結果を出力する処理が正しくありません。'
+  assessment('太郎') === assessment('太郎'),
+  '入力が同じ名前なら同じ診断結果を出力する処理が正しくありません。'
 );
-
-
